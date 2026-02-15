@@ -2,13 +2,18 @@
 
 A simple, intuitive git diff plugin for Neovim.
 
-![EasyDiff Screenshot](assets/screenshot.png)
+<div align="center">
+  
+https://github.com/user-attachments/assets/9d12b36c-2a54-44e8-9ab8-ef07405dc503
+
+</div>
+
 
 ## Why?
 
-I use AI to code a lot, and reviewing the generated code was painful. I tried several git plugins:
+I needed a better way to review AI-generated code. I tried several git plugins:
 
-- **neogit** - Lackluster UX, struggled to navigate, no inline diffs
+- **neogit** - Didnt like the UX, struggled to navigate, no inline diffs
 - **lazygit** - Felt it was too complex, inline diffs had no syntax highlighting
 - **gitsigns** - Close, but staging files was cumbersome (manual navigation + multi-key hotkeys)
 
