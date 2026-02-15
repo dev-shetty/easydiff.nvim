@@ -35,7 +35,11 @@ end
 function M.open()
   local success = ui.open()
   if success then
-    explorer.render()
+    local has_files = explorer.render()
+    -- Auto-open first file if there are changes
+    if has_files then
+      explorer.open_first_file()
+    end
   end
 end
 

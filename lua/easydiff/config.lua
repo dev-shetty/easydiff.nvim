@@ -8,7 +8,7 @@ M.defaults = {
 
   -- Keymaps (all use <leader> prefix except where noted)
   keymaps = {
-    open = "<leader>gg",        -- Open EasyDiff
+    open = "<leader>ge",        -- Open EasyDiff (ge = git easydiff)
     stage = "<leader>s",        -- Stage file/hunk
     stage_file = "<leader>S",   -- Stage entire file
     unstage = "<leader>u",      -- Unstage file/hunk
@@ -17,6 +17,8 @@ M.defaults = {
     prev_file = "<S-Tab>",      -- Previous changed file (no leader)
     close = "q",                -- Close EasyDiff (no leader)
     select = "<CR>",            -- Open file in diff view (no leader)
+    focus_explorer = "<C-h>",   -- Focus explorer window
+    focus_diff = "<C-l>",       -- Focus diff window
   },
 
   -- Signs for gutter

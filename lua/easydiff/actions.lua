@@ -13,11 +13,17 @@ local function refresh_ui()
   if config.get("auto_refresh") then
     -- Small delay to let git settle
     vim.defer_fn(function()
+      -- Refresh explorer first
       explorer.refresh()
 
       -- Re-render diff if a file is open
       local diff_state = diff.get_state()
-      if diff_state.filepath then
+      local ui_state = ui.get_state()
+
+      if diff_state.filepath and ui_state.diff_buf and vim.api.nvim_buf_is_valid(ui_state.diff_buf) then
+        -- Clear existing highlights first
+        diff.clear(ui_state.diff_buf)
+        -- Re-render with fresh git data
         diff.render(diff_state.filepath, diff_state.is_staged)
       end
     end, 50)
@@ -133,7 +139,7 @@ function M.unstage_hunk()
   end
 
   if not diff_state.is_staged then
-    vim.notify("EasyDiff: Cannot unstage from unstaged view", vim.log.levels.WARN)
+    vim.notify("EasyDiff: Cannot unstage from unstaged view (use stage instead)", vim.log.levels.WARN)
     return
   end
 
@@ -141,7 +147,9 @@ function M.unstage_hunk()
   local hunk_idx, hunk = diff.get_hunk_at_cursor()
 
   if not hunk then
-    vim.notify("EasyDiff: No hunk at cursor position", vim.log.levels.WARN)
+    -- Might be viewing a fully staged file with no diff hunks to show
+    -- In this case, suggest using unstage_file instead
+    vim.notify("EasyDiff: No hunk at cursor - try <leader>U to unstage entire file", vim.log.levels.WARN)
     return
   end
 

@@ -49,21 +49,39 @@ function M.render(filepath, is_staged)
   end
 
   if not diff_lines or #diff_lines == 0 then
-    -- No diff (possibly untracked file)
-    local git_status = git.status()
-    local is_untracked = false
+    -- No diff - could be untracked, newly staged, or fully clean
+    -- Clear the parsed diff state since there's nothing to show
+    M.state.parsed_diff = nil
+    M.state.diff_header = nil
 
-    for _, f in ipairs(git_status.unstaged) do
-      if f.path == filepath and f.status == "?" then
-        is_untracked = true
-        break
+    local git_status = git.status()
+    local should_highlight_as_added = false
+
+    -- Check if it's an untracked file (unstaged, status ?)
+    if not is_staged then
+      for _, f in ipairs(git_status.unstaged) do
+        if f.path == filepath and f.status == "?" then
+          should_highlight_as_added = true
+          break
+        end
+      end
+    else
+      -- Check if it's a newly added staged file (staged, status A)
+      for _, f in ipairs(git_status.staged) do
+        if f.path == filepath and f.status == "A" then
+          should_highlight_as_added = true
+          break
+        end
       end
     end
 
-    if is_untracked then
+    if should_highlight_as_added then
       -- Highlight entire file as added
       M._highlight_entire_file_as_added(buf)
     end
+
+    -- Set up keymaps regardless
+    ui.setup_diff_keymaps(buf)
     return
   end
 

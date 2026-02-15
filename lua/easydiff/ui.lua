@@ -55,24 +55,21 @@ function M.open()
   vim.cmd("tabnew")
   M.state.tab_id = vim.api.nvim_get_current_tabpage()
 
-  -- Create explorer buffer
-  M.state.explorer_buf = create_scratch_buffer("EasyDiff://Explorer")
-
-  -- Set the current window to show explorer
-  M.state.explorer_win = vim.api.nvim_get_current_win()
-  vim.api.nvim_win_set_buf(M.state.explorer_win, M.state.explorer_buf)
-
-  -- Set explorer width
-  local width = config.get("explorer_width") or 35
-  vim.api.nvim_win_set_width(M.state.explorer_win, width)
-
-  -- Create vertical split for diff view
-  vim.cmd("vsplit")
+  -- The current window will become the diff view (takes most space)
   M.state.diff_win = vim.api.nvim_get_current_win()
 
   -- Create an empty diff buffer initially
   M.state.diff_buf = create_scratch_buffer("EasyDiff://Diff")
   vim.api.nvim_win_set_buf(M.state.diff_win, M.state.diff_buf)
+
+  -- Create a LEFT split for the explorer (smaller, fixed width)
+  local width = config.get("explorer_width") or 35
+  vim.cmd("topleft " .. width .. "vsplit")
+  M.state.explorer_win = vim.api.nvim_get_current_win()
+
+  -- Create explorer buffer
+  M.state.explorer_buf = create_scratch_buffer("EasyDiff://Explorer")
+  vim.api.nvim_win_set_buf(M.state.explorer_win, M.state.explorer_buf)
 
   -- Set options for explorer window
   vim.wo[M.state.explorer_win].number = false
@@ -261,6 +258,13 @@ function M.setup_diff_keymaps(buf)
   -- Previous file
   opts.desc = "Previous changed file"
   vim.keymap.set("n", keymaps.prev_file, actions.prev_file, opts)
+
+  -- Window toggle keymaps
+  opts.desc = "Focus explorer"
+  vim.keymap.set("n", keymaps.focus_explorer, M.focus_explorer, opts)
+
+  opts.desc = "Focus diff view"
+  vim.keymap.set("n", keymaps.focus_diff, M.focus_diff, opts)
 end
 
 return M

@@ -134,6 +134,18 @@ function M.render()
     local first_file_line = M.state.files[1].line
     vim.api.nvim_win_set_cursor(state.explorer_win, { first_file_line, 0 })
   end
+
+  return #M.state.files > 0
+end
+
+-- Open the first file automatically
+function M.open_first_file()
+  if #M.state.files > 0 then
+    local first_file = M.state.files[1]
+    ui.open_file_in_diff(first_file.path, first_file.is_staged)
+    -- Focus back on explorer after opening
+    ui.focus_explorer()
+  end
 end
 
 -- Get file at current cursor position
@@ -264,6 +276,15 @@ function M._setup_keymaps()
   vim.keymap.set("n", "<Tab>", function()
     ui.focus_diff()
   end, vim.tbl_extend("force", opts, { desc = "Focus diff view" }))
+
+  -- Window toggle keymaps
+  vim.keymap.set("n", keymaps.focus_diff, function()
+    ui.focus_diff()
+  end, vim.tbl_extend("force", opts, { desc = "Focus diff view" }))
+
+  vim.keymap.set("n", keymaps.close, function()
+    ui.close()
+  end, vim.tbl_extend("force", opts, { desc = "Close EasyDiff" }))
 end
 
 return M
